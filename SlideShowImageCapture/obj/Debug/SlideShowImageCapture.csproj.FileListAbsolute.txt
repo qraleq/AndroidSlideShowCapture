@@ -1,0 +1,13 @@
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SlideShowImageCapture.exe.config
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SlideShowImageCapture.exe
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SlideShowImageCapture.pdb
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.csprojResolveAssemblyReference.cache
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.Properties.Resources.resources
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.csproj.GenerateResource.Cache
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.exe
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.pdb
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.Form1.resources
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Mono.Posix.dll
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.dll
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.pdb
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.xml
