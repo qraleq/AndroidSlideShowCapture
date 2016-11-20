@@ -32,6 +32,7 @@ namespace SlideShowImageCapture
                     this.Height = area.Height;
                     this.FormBorderStyle = FormBorderStyle.None;
                     this.WindowState = FormWindowState.Maximized;
+                    Cursor.Hide();
                 }
             }
             else
@@ -42,6 +43,7 @@ namespace SlideShowImageCapture
                 this.TopMost = false;
                 this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
                 this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+                Cursor.Hide();
 
             }
 
@@ -102,7 +104,7 @@ namespace SlideShowImageCapture
         // global variables for controlling input and time period for image slide show
         string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Playing Cards", "*.png");
         int i = 1;
-        int timePeriod = 3000;
+        int timePeriod = 1000;
 
 
         private void startSlideShow(object sender, EventArgs e)
@@ -117,7 +119,7 @@ namespace SlideShowImageCapture
             Task triggerCamera1 = Task.Run(async () =>
             {
                 Thread.Sleep(400);
-                await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 5000);
+                await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
             });
             triggerCamera1.Wait();
 
@@ -141,7 +143,7 @@ namespace SlideShowImageCapture
                 Task triggerCamera2 = Task.Run(async () =>
                 {
                     Thread.Sleep(400);
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 5000);
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
                 });
                 triggerCamera2.Wait();
 
@@ -150,14 +152,19 @@ namespace SlideShowImageCapture
             }
             else
             {
+                Thread.Sleep(1000);
                 AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", adbData.androidDeviceData, adbData.receiver);
 
-                Thread.Sleep(timePeriod * 2);
+                //Thread.Sleep(timePeriod);
                 System.Windows.Forms.Application.Exit();
             }
 
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
