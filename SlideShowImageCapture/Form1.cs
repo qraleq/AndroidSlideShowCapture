@@ -15,7 +15,6 @@ namespace SlideShowImageCapture
         {
             InitializeComponent();
 
-
             // show windows form on secondary screen(projector) by default, otherwise show it on pc monitor
             var secondaryScreen = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
 
@@ -53,6 +52,10 @@ namespace SlideShowImageCapture
             adbData.androidDeviceData = adb.getFirstConnectedDevices();
             adbData.receiver = new ConsoleOutputReceiver();
 
+            // get number of files in OpenCameraFolder
+            AdbClient.Instance.ExecuteRemoteCommand("cd storage/emulated/legacy/DCIM/OpenCamera/ && ls -l | wc -l", adbData.androidDeviceData, adbData.receiver);
+            noOfFilesOld = Int32.Parse(adbData.receiver.ToString());
+
             // turn screen on if it is off and run OpenCamera app
             Task startCameraApp = Task.Run(async () =>
             {
@@ -67,6 +70,7 @@ namespace SlideShowImageCapture
 
                 await AdbClient.Instance.ExecuteRemoteCommandAsync("am start -n net.sourceforge.opencamera/net.sourceforge.opencamera.MainActivity", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 5000);
             });
+
             startCameraApp.Wait();
 
         }
@@ -104,7 +108,8 @@ namespace SlideShowImageCapture
         // global variables for controlling input and time period for image slide show
         string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Playing Cards", "*.png");
         int i = 1;
-        int timePeriod = 1000;
+        int timePeriod = 1500;
+        int noOfFilesOld, noOfFilesNew;
 
 
         private void startSlideShow(object sender, EventArgs e)
@@ -131,40 +136,41 @@ namespace SlideShowImageCapture
 
         private void onSlideShowTimer(object sender, EventArgs e)
         {
-            if (i < images.Length)
-            {
+            //AdbClient.Instance.ExecuteRemoteCommand("pwd", adbData.androidDeviceData, adbData.receiver);
+            //AdbClient.Instance.ExecuteRemoteCommand("ls -l | wc -l", adbData.androidDeviceData, adbData.receiver);
+            //noOfFilesNew = Int32.Parse(adbData.receiver.ToString());
 
-                Task changeImage = Task.Run(() =>
+            //if (noOfFilesNew == noOfFilesOld + 1)
+            //{
+
+                if (i < images.Length)
                 {
-                    picBox.Image = Image.FromFile(images[i]);
-                });
-                changeImage.Wait();
 
-                Task triggerCamera2 = Task.Run(async () =>
+                    Task changeImage = Task.Run(() =>
+                    {
+                        picBox.Image = Image.FromFile(images[i]);
+                    });
+                    changeImage.Wait();
+
+                    Task triggerCamera2 = Task.Run(async () =>
+                    {
+                        Thread.Sleep(400);
+                        await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
+                    });
+                    triggerCamera2.Wait();
+
+
+                    i++;
+                }
+                else
                 {
-                    Thread.Sleep(400);
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
-                });
-                triggerCamera2.Wait();
+                    Thread.Sleep(1000);
+                    AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", adbData.androidDeviceData, adbData.receiver);
 
-
-                i++;
-            }
-            else
-            {
-                Thread.Sleep(1000);
-                AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", adbData.androidDeviceData, adbData.receiver);
-
-                //Thread.Sleep(timePeriod);
-                System.Windows.Forms.Application.Exit();
-            }
-
-        }
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
+                    //Thread.Sleep(timePeriod);
+                    System.Windows.Forms.Application.Exit();
+                }
+            //}
         }
     }
-
 }
