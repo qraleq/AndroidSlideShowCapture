@@ -14,11 +14,10 @@ namespace SlideShowImageCapture
 {
     public partial class SlideShowForm : Form
     {
-        SDKHandler CameraHandler;
-        int ErrCount;
-        object ErrLock = new object();
-        List<Camera> CamList;
 
+        #region global
+
+        // capture mode options
         // 1 - Canon camera
         // 2 - Android camera
         int captureMode = 1;
@@ -26,7 +25,27 @@ namespace SlideShowImageCapture
         // global variables for controlling input and time period for image slide show
         string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Playing Cards", "*.png");
         int i = 1;
-        int timerPeriod = 2000;
+        int timerPeriod = 1600;
+
+        AndroidOpenCamera androidOpenCamera = new AndroidOpenCamera();
+
+        public static class androidData
+        {
+            public static DeviceData androidDeviceData { get; set; }
+            public static ConsoleOutputReceiver receiver { get; set; }
+            public static CancellationToken cancelToken { get; set; }
+        }
+
+        public static class canonData
+        {
+            public static SDKHandler CameraHandler;
+            public static List<Camera> cameraList;
+        }
+
+        int errorCount;
+        object errorLock = new object();
+
+        #endregion
 
 
         public SlideShowForm()
@@ -35,76 +54,87 @@ namespace SlideShowImageCapture
             {
                 InitializeComponent();
 
-                // show windows form on secondary screen(projector) by default, otherwise show it on pc monitor
-                var secondaryScreen = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
+                // sets projection screen and windows form properties
+                SetScreenAndFormProperties();
 
-                if (secondaryScreen != null)
-                {
-                    var area = secondaryScreen.WorkingArea;
-
-                    if (!area.IsEmpty)
-                    {
-                        // windows form properties
-                        this.Show();
-                        this.Left = area.X;
-                        this.Top = area.Y;
-                        this.Width = area.Width;
-                        this.Height = area.Height;
-                        this.FormBorderStyle = FormBorderStyle.None;
-                        this.WindowState = FormWindowState.Maximized;
-                        Cursor.Hide();
-                    }
-                }
-                else
-                {
-                    // windows form properties
-                    this.MaximizeBox = false;
-                    this.MinimizeBox = false;
-                    this.TopMost = false;
-                    this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-                    this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-                    Cursor.Hide();
-
-                }
-
-
-                switch (captureMode)
-                {
-                    case 1:
-                        CameraHandler = new SDKHandler();
-                        CameraHandler.CameraAdded += new SDKHandler.CameraAddedHandler(SDK_CameraAdded);
-
-                        RefreshCameraList();
-
-                        CameraHandler.OpenSession(CamList.FirstOrDefault());
-
-                        break;
-
-
-                    case 2:
-                        // start ADB server and find connected devices
-                        ADBstart adb = new ADBstart();
-                        adb.startAdbServer();
-
-                        adbData.androidDeviceData = adb.getFirstConnectedDevice();
-                        adbData.receiver = new ConsoleOutputReceiver();
-
-                        // start Open Camera Android App
-                        OpenCamera androidOpenCamera = new OpenCamera();
-                        androidOpenCamera.openCameraApp();
-                        break;
-
-                    default:
-                        break;
-                }
-
-
-
-
+                // initializes ADB or Canon PTP communication
+                InitializeCommunicationInterfaces();
 
             }
             catch (DllNotFoundException) { ReportError("Canon DLLs not found!"); }
             catch (Exception ex) { ReportError(ex.Message); }
+        }
+
+
+
+        private void InitializeCommunicationInterfaces()
+        {
+            // depending on which capture mode has been selected, initialize interfaces
+            switch (captureMode)
+            {
+                case 1:
+                    // SDK connection initialization
+                    canonData.CameraHandler = new SDKHandler();
+                    canonData.CameraHandler.CameraAdded += new SDKHandler.CameraAddedHandler(SDK_CameraAdded);
+
+                    // check for connected Canon cameras
+                    RefreshCameraList();
+                    canonData.CameraHandler.OpenSession(canonData.cameraList.FirstOrDefault());
+                    canonData.CameraHandler.UILock(true);
+                    break;
+
+
+                case 2:
+                    // start ADB server and find connected devices
+                    ADB adb = new ADB();
+                    adb.StartAdbServer();
+
+                    androidData.androidDeviceData = adb.GetFirstConnectedDevice();
+                    androidData.receiver = new ConsoleOutputReceiver();
+
+                    // start Open Camera Android App
+                    androidOpenCamera.OpenCameraApp();
+                    break;
+
+
+                default:
+                    ReportError("Non valid mode has been selected!");
+                    break;
+            }
+        }
+
+        private void SetScreenAndFormProperties()
+        {
+            // show windows form on secondary screen(projector) by default, otherwise show it on pc monitor
+            var secondaryScreen = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
+
+            if (secondaryScreen != null)
+            {
+                var area = secondaryScreen.WorkingArea;
+
+                if (!area.IsEmpty)
+                {
+                    // windows form properties for secondary screen
+                    this.Show();
+                    this.Left = area.X;
+                    this.Top = area.Y;
+                    this.Width = area.Width;
+                    this.Height = area.Height;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                    Cursor.Hide();
+                }
+            }
+            else
+            {
+                // windows form properties for primary screen
+                this.MaximizeBox = false;
+                this.MinimizeBox = false;
+                this.TopMost = false;
+                this.FormBorderStyle = FormBorderStyle.None;
+                this.WindowState = FormWindowState.Maximized;
+                Cursor.Hide();
+            }
         }
 
 
@@ -116,33 +146,20 @@ namespace SlideShowImageCapture
 
         private void RefreshCameraList()
         {
-            CamList = CameraHandler.GetCameraList();
+            canonData.cameraList = canonData.CameraHandler.GetCameraList();
         }
 
 
-
-
-
-
-        public static class adbData
+        public class ADB
         {
-            public static DeviceData androidDeviceData { get; set; }
-            public static ConsoleOutputReceiver receiver { get; set; }
-            public static CancellationToken cancelToken { get; set; }
-        }
-
-
-        public class ADBstart
-        {
-
-            public void startAdbServer()
+            public void StartAdbServer()
             {
                 AdbServer adbServer = new AdbServer();
                 adbServer.StartServer(@"D:\Developement\android-sdk\platform-tools\adb.exe", true);
             }
 
 
-            public DeviceData getFirstConnectedDevice()
+            public DeviceData GetFirstConnectedDevice()
             {
                 if (AdbClient.Instance.GetDevices().Count != 0)
                 {
@@ -158,91 +175,86 @@ namespace SlideShowImageCapture
 
 
 
-        public class OpenCamera
+        public class AndroidOpenCamera
         {
-            public void openCameraApp()
+            public void OpenCameraApp()
             {
                 // turn screen on if it is off and run OpenCamera app
                 Task startCameraApp = Task.Run(async () =>
                 {
-                    AdbClient.Instance.ExecuteRemoteCommand("service call power 12", adbData.androidDeviceData, adbData.receiver);
-                    var receiverData = adbData.receiver.ToString();
+                    AdbClient.Instance.ExecuteRemoteCommand("service call power 12", androidData.androidDeviceData, androidData.receiver);
+                    var receiverData = androidData.receiver.ToString();
 
                     if (receiverData.Equals("Result: Parcel(00000000 00000000   '........')\r\n"))
                     {
-                        AdbClient.Instance.ExecuteRemoteCommand("input keyevent KEYCODE_POWER", adbData.androidDeviceData, adbData.receiver);
+                        AdbClient.Instance.ExecuteRemoteCommand("input keyevent KEYCODE_POWER", androidData.androidDeviceData, androidData.receiver);
                     }
 
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("am start -n net.sourceforge.opencamera/net.sourceforge.opencamera.MainActivity", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 5000);
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync("am start -n net.sourceforge.opencamera/net.sourceforge.opencamera.MainActivity", androidData.androidDeviceData, androidData.receiver, androidData.cancelToken, 5000);
                 });
                 startCameraApp.Wait();
+            }
+
+            public void TakePhoto()
+            {
+                Thread.Sleep(600);
+                Task triggerAndroidCamera = Task.Run(async () =>
+                {
+                    await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", androidData.androidDeviceData, androidData.receiver, androidData.cancelToken, 4000);
+                });
+                triggerAndroidCamera.Wait();
             }
         }
 
 
 
-
-
-
-
-        private void startSlideShow(object sender, EventArgs e)
+        private void OnSlideshowStart(object sender, EventArgs e)
         {
             textBox1.Visible = false;
 
             picBox.SizeMode = PictureBoxSizeMode.Zoom;
             picBox.Dock = DockStyle.Fill;
 
-            picBox.Image = Image.FromFile(images.First());
-
-
-            if (captureMode==1)
+            Task showFirstSlide = Task.Run(() =>
             {
-                Thread.Sleep(400);
-                CameraHandler.TakePhoto();
+                picBox.Image = Image.FromFile(images.First());
+
+            });
+            showFirstSlide.Wait();
+
+
+            if (captureMode == 1)
+            {
+                Thread.Sleep(600);
+                canonData.CameraHandler.TakePhoto();
             }
-            else
+            else if (captureMode == 2)
             {
-                Task triggerAndroidCamera1 = Task.Run(async () =>
-                {
-                    Thread.Sleep(400);
-                    await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
-                });
-                triggerAndroidCamera1.Wait();
+                androidOpenCamera.TakePhoto();
             }
 
             timer1.Interval = timerPeriod;
-            timer1.Tick += new EventHandler(onSlideShowTimer);
+            timer1.Tick += new EventHandler(OnSlideShowTimer);
             timer1.Start();
         }
 
 
-        private void onSlideShowTimer(object sender, EventArgs e)
+        private void OnSlideShowTimer(object sender, EventArgs e)
         {
             if (i < images.Length)
             {
 
-                Task changeImage = Task.Run(() =>
-                {
-                    picBox.Image = Image.FromFile(images[i]);
-                });
-                changeImage.Wait();
-
+                picBox.Image = Image.FromFile(images[i]);
 
                 if (captureMode == 1)
                 {
-                    Thread.Sleep(400);
-                    CameraHandler.TakePhoto();
+                    Thread.Sleep(600);
+                    canonData.CameraHandler.TakePhoto();
                 }
-                else
+                else if (captureMode == 2)
                 {
-                    Task triggerAndroidCamera2 = Task.Run(async () =>
-                    {
-                        Thread.Sleep(400);
-                        await AdbClient.Instance.ExecuteRemoteCommandAsync("input keyevent 27", adbData.androidDeviceData, adbData.receiver, adbData.cancelToken, 4000);
-                    });
-                    triggerAndroidCamera2.Wait();
+                    androidOpenCamera.TakePhoto();
                 }
-
 
                 i++;
             }
@@ -250,19 +262,17 @@ namespace SlideShowImageCapture
             {
                 Thread.Sleep(1000);
 
-                if (captureMode==1)
+                if (captureMode == 1)
                 {
-                    CameraHandler.CloseSession();
-                    CameraHandler.Dispose();
-                        
+                    canonData.CameraHandler.CloseSession();
+                    canonData.CameraHandler.Dispose();
                 }
-                else
+                else if (captureMode == 2)
                 {
-                    AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", adbData.androidDeviceData, adbData.receiver);
-
+                    AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidData.androidDeviceData, androidData.receiver);
                 }
 
-                //Thread.Sleep(timePeriod);
+                Thread.Sleep(1000);
                 System.Windows.Forms.Application.Exit();
             }
         }
@@ -272,12 +282,12 @@ namespace SlideShowImageCapture
         private void ReportError(string message)
         {
             int errc;
-            lock (ErrLock) { errc = ++ErrCount; }
+            lock (errorLock) { errc = ++errorCount; }
 
             if (errc < 4) MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else if (errc == 4) MessageBox.Show("Many errors happened!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-            lock (ErrLock) { ErrCount--; }
+            lock (errorLock) { errorCount--; }
         }
 
     }
