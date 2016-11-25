@@ -6,8 +6,10 @@ D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\Sl
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.csproj.GenerateResource.Cache
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.exe
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.pdb
-D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.Form1.resources
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Mono.Posix.dll
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.dll
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.pdb
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.xml
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\EDSDKLib.dll
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\EDSDKLib.pdb
+D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.SlideShowForm.resources
