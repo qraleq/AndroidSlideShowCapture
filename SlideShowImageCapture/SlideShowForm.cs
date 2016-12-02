@@ -14,7 +14,7 @@ namespace SlideShowImageCapture
 {
     public partial class SlideShowForm : Form
     {
-
+        
         #region global
 
         // capture mode options
@@ -23,9 +23,9 @@ namespace SlideShowImageCapture
         int captureMode = 1;
 
         // global variables for controlling input and time period for image slide show
-        string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Playing Cards", "*.png");
+        string[] images = Directory.GetFiles(@"D:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Calibration For Black Paper\", "*.png");
         int i = 1;
-        int timerPeriod = 1600;
+        int timerPeriod = 3500;
 
         AndroidOpenCamera androidOpenCamera = new AndroidOpenCamera();
 
@@ -158,7 +158,7 @@ namespace SlideShowImageCapture
                 adbServer.StartServer(@"D:\Developement\android-sdk\platform-tools\adb.exe", true);
             }
 
-
+            
             public DeviceData GetFirstConnectedDevice()
             {
                 if (AdbClient.Instance.GetDevices().Count != 0)
@@ -173,8 +173,7 @@ namespace SlideShowImageCapture
             }
         }
 
-
-
+        
         public class AndroidOpenCamera
         {
             public void OpenCameraApp()
@@ -212,6 +211,10 @@ namespace SlideShowImageCapture
         {
             textBox1.Visible = false;
 
+            // textbox containing current filename
+            textBox2.Visible = true;
+            textBox2.Text = Path.GetFileName(images.First());
+
             picBox.SizeMode = PictureBoxSizeMode.Zoom;
             picBox.Dock = DockStyle.Fill;
 
@@ -226,6 +229,11 @@ namespace SlideShowImageCapture
             if (captureMode == 1)
             {
                 Thread.Sleep(600);
+
+                // save to computer
+                canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
+                canonData.CameraHandler.ImageSaveDirectory = @"D:\Measurements";
+                canonData.CameraHandler.SetCapacity();
                 canonData.CameraHandler.TakePhoto();
             }
             else if (captureMode == 2)
@@ -243,12 +251,23 @@ namespace SlideShowImageCapture
         {
             if (i < images.Length)
             {
-
                 picBox.Image = Image.FromFile(images[i]);
+                
+                textBox2.Text =Path.GetFileName(images[i]);
 
                 if (captureMode == 1)
                 {
                     Thread.Sleep(600);
+
+
+                    // save to computer
+                    canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
+                    canonData.CameraHandler.ImageSaveDirectory = @"D:\Test";
+
+                    //canonData.CameraHandler.ImageSaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                    canonData.CameraHandler.SetCapacity();
+
+
                     canonData.CameraHandler.TakePhoto();
                 }
                 else if (captureMode == 2)
@@ -264,8 +283,9 @@ namespace SlideShowImageCapture
 
                 if (captureMode == 1)
                 {
-                    canonData.CameraHandler.CloseSession();
-                    canonData.CameraHandler.Dispose();
+                    canonData.CameraHandler.UILock(false);
+                    //canonData.CameraHandler.CloseSession();
+                    //canonData.CameraHandler.Dispose();
                 }
                 else if (captureMode == 2)
                 {
