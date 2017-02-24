@@ -1,4 +1,7 @@
-﻿namespace SlideShowImageCapture
+﻿using System.Linq;
+using System.Windows.Forms;
+
+namespace SlideShowImageCapture
 {
     partial class SlideShowForm
     {
@@ -26,7 +29,7 @@
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-        private void InitializeComponent()
+        private void initializeComponent()
         {
             this.components = new System.ComponentModel.Container();
             this.picBox = new System.Windows.Forms.PictureBox();
@@ -92,9 +95,39 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
+
         }
 
         #endregion
+
+        private void setScreenAndFormProperties()
+        {
+            // show windows form on secondary screen(projector) by default, otherwise show it on pc monitor
+            var secondaryScreen = Screen.AllScreens.Where(s => !s.Primary).FirstOrDefault();
+
+            if (secondaryScreen != null)
+            {
+                var area = secondaryScreen.WorkingArea;
+
+                if (!area.IsEmpty)
+                {
+                    // windows form properties for secondary screen
+                    this.Left = area.X;
+                    this.Top = area.Y;
+                    this.Width = area.Width;
+                    this.Height = area.Height;
+                }
+            }
+
+            this.Show();
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.FormBorderStyle = FormBorderStyle.None;
+            this.TopMost = false;
+            this.WindowState = FormWindowState.Maximized;
+            Cursor.Hide();
+        }
+
 
         private System.Windows.Forms.PictureBox picBox;
         private System.Windows.Forms.Timer timer1;
