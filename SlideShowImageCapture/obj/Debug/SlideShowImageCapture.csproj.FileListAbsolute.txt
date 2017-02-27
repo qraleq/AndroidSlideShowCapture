@@ -12,5 +12,4 @@ D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\Sh
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\SharpAdbClient.xml
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\EDSDKLib.dll
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\bin\Debug\EDSDKLib.pdb
-D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.SlideShowConsole.resources
 D:\Projects\C# Projects\SlideShowImageCapture\SlideShowImageCapture\obj\Debug\SlideShowImageCapture.SlideShowForm.resources

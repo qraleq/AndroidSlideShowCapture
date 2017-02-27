@@ -15,16 +15,19 @@ namespace SlideShowImageCapture
 {
     public partial class SlideShowForm : Form
     {
-        
+
+
         #region global
 
         // capture mode options
         // 1 - Canon camera
         // 2 - Android camera
-        int captureMode = 2;
+        int captureMode = 1;
 
         // global variables for controlling input and time period for image slide show
-        string[] images = Directory.GetFiles(@"D:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Measurement Masks\", "*.png");
+        string[] images = Directory.GetFiles(@"D:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Misc\", "*.png");
+        //string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\/*SlideShowImageCapture*/\bin\Debug\Playing Cards\", "*.png");
+
         int i = 1;
         int timerPeriod = 3500;
 
@@ -36,6 +39,8 @@ namespace SlideShowImageCapture
 
         public SlideShowForm()
         {
+            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
+
             try
             {
                 // initialize Windows Form
@@ -60,13 +65,13 @@ namespace SlideShowImageCapture
             switch (captureMode)
             {
                 case 1:
-
                     canonCamera.connectCanonCamera();
                     break;
-
-
                 case 2:
-
+                    androidCamera.connectAndroidCamera();
+                    break;
+                case 3:
+                    canonCamera.connectCanonCamera();
                     androidCamera.connectAndroidCamera();
                     break;
 
@@ -76,41 +81,41 @@ namespace SlideShowImageCapture
             }
         }
 
-     
+
         private void OnSlideshowStart(object sender, EventArgs e)
         {
             textBox1.Visible = false;
 
             // textbox containing current filename
-            textBox2.Visible = true;
+            textBox2.Visible = false;
             textBox2.Text = Path.GetFileName(images.First());
-
-            picBox.SizeMode = PictureBoxSizeMode.Zoom;
-            picBox.Dock = DockStyle.Fill;
 
             Task showFirstSlide = Task.Run(() =>
             {
                 picBox.Image = Image.FromFile(images.First());
-
             });
 
             showFirstSlide.Wait();
 
-
             if (captureMode == 1)
             {
-                Thread.Sleep(600);
+                Thread.Sleep(1000);
+                canonCamera.takePhoto();
 
-                // save to computer
-                canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
-                canonData.CameraHandler.ImageSaveDirectory = @"D:\Measurements\";
-                canonData.CameraHandler.SetCapacity();
                 canonData.CameraHandler.TakePhoto();
             }
             else if (captureMode == 2)
             {
                 androidCamera.takePhoto();
             }
+            else if (captureMode == 3)
+            {
+                Thread.Sleep(1000);
+                androidCamera.takePhoto();
+                canonCamera.takePhoto();
+
+            }
+
 
             timer1.Interval = timerPeriod;
             timer1.Tick += new EventHandler(OnSlideShowTimer);
@@ -122,29 +127,34 @@ namespace SlideShowImageCapture
         {
             if (i < images.Length)
             {
-                picBox.Image = Image.FromFile(images[i]);
+                Task showSlide = Task.Run(() =>
+                {
+                    picBox.Image = Image.FromFile(images[i]);
+                });
+
+                showSlide.Wait();
 
                 textBox2.Text = Path.GetFileName(images[i]);
 
+
+
                 if (captureMode == 1)
                 {
-                    Thread.Sleep(600);
-
-
-                    // save to computer
-                    canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
-                    canonData.CameraHandler.ImageSaveDirectory = @"D:\Measurements\";
-
-                    //canonData.CameraHandler.ImageSaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-                    canonData.CameraHandler.SetCapacity();
-
-
-                    canonData.CameraHandler.TakePhoto();
+                    Thread.Sleep(1000);
+                    canonCamera.takePhoto();
                 }
                 else if (captureMode == 2)
                 {
                     androidCamera.takePhoto();
                 }
+                else if (captureMode == 3)
+                {
+                    Thread.Sleep(1000);
+                    androidCamera.takePhoto();
+                    canonCamera.takePhoto();
+                }
+
+                //Thread.Sleep(600);
 
                 i++;
             }
@@ -155,10 +165,11 @@ namespace SlideShowImageCapture
                 if (captureMode == 1)
                 {
                     canonData.CameraHandler.UILock(false);
-                    //canonData.CameraHandler.CloseSession();
-                    //canonData.CameraHandler.Dispose();
+                    canonData.CameraHandler.CloseSession();
+                    canonData.CameraHandler.Dispose();
                 }
-                else if (captureMode == 2)
+                else
+                if (captureMode == 2)
                 {
                     AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
                 }
@@ -167,6 +178,18 @@ namespace SlideShowImageCapture
                 System.Windows.Forms.Application.Exit();
             }
         }
+
+
+        static void OnProcessExit(object sender, EventArgs e)
+        {
+            canonData.CameraHandler.UILock(false);
+            canonData.CameraHandler.CloseSession();
+            canonData.CameraHandler.Dispose();
+            //AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
+            AdbClient.Instance.ExecuteRemoteCommand("am force-stop com.oneplus.camera", androidCameraData.androidDeviceData, androidCameraData.receiver);
+
+        }
+
 
     }
 }

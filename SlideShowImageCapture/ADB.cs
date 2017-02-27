@@ -23,10 +23,8 @@ namespace SlideShowImageCapture
                 {
                     MessageBox.Show("ADB Server not running! Check if ADB tools installed!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
             }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-        
     }
 
         // check for connected devices
@@ -42,7 +40,5 @@ namespace SlideShowImageCapture
                 throw new ArgumentException("No Android device connected!");
             }
         }
-
-
     }
 }

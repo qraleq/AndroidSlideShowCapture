@@ -25,9 +25,27 @@ namespace SlideShowImageCapture
             refreshCameraList();
 
             // open session with Canon camera and lock UI
-            canonData.CameraHandler.OpenSession(canonData.cameraList.FirstOrDefault());
-            canonData.CameraHandler.UILock(true);
+            if (!canonData.CameraHandler.CameraSessionOpen)
+            {
+                canonData.CameraHandler.OpenSession(canonData.cameraList.FirstOrDefault());
+                canonData.CameraHandler.UILock(true);
+            }
+
         }
+
+        public void takePhoto()
+        {
+            // save to computer
+            canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
+            canonData.CameraHandler.ImageSaveDirectory = @"D:\Measurements\";
+
+            //canonData.CameraHandler.ImageSaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+            canonData.CameraHandler.SetCapacity();
+
+
+            canonData.CameraHandler.TakePhoto();
+        }
+
 
         private void initializeCanonSDK()
         {
@@ -41,9 +59,8 @@ namespace SlideShowImageCapture
             try { refreshCameraList(); }
             catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
-
-
-        public void refreshCameraList()
+        
+        private void refreshCameraList()
         {
             canonData.cameraList = canonData.CameraHandler.GetCameraList();
         }

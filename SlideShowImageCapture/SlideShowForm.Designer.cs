@@ -53,7 +53,7 @@ namespace SlideShowImageCapture
             // timer1
             // 
             this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
+            this.timer1.Interval = 5000;
             // 
             // textBox1
             // 
@@ -112,6 +112,7 @@ namespace SlideShowImageCapture
                 if (!area.IsEmpty)
                 {
                     // windows form properties for secondary screen
+                    this.Show();
                     this.Left = area.X;
                     this.Top = area.Y;
                     this.Width = area.Width;
@@ -125,6 +126,8 @@ namespace SlideShowImageCapture
             this.FormBorderStyle = FormBorderStyle.None;
             this.TopMost = false;
             this.WindowState = FormWindowState.Maximized;
+            picBox.SizeMode = PictureBoxSizeMode.Zoom;
+            picBox.Dock = DockStyle.Fill;
             Cursor.Hide();
         }
 
