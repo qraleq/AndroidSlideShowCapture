@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading;
 using SharpAdbClient;
-using EDSDKLib;
 using static SlideShowImageCapture.CanonCamera;
 using static SlideShowImageCapture.AndroidCamera;
 
@@ -15,8 +14,6 @@ namespace SlideShowImageCapture
 {
     public partial class SlideShowForm : Form
     {
-
-
         #region global
 
         // capture mode options
@@ -25,8 +22,8 @@ namespace SlideShowImageCapture
         int captureMode = 1;
 
         // global variables for controlling input and time period for image slide show
-        string[] images = Directory.GetFiles(@"D:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Misc\", "*.png");
-        //string[] images = Directory.GetFiles(@"D:\Projects\C# Projects\SlideShowImageCapture\/*SlideShowImageCapture*/\bin\Debug\Playing Cards\", "*.png");
+        //string[] images = Directory.GetFiles(@"D:\Playing Cards\", "*.png");
+        string[] images = Directory.GetFiles(@"Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Debug\Playing Cards\", "*.png");
 
         int i = 1;
         int timerPeriod = 3500;
@@ -102,7 +99,7 @@ namespace SlideShowImageCapture
                 Thread.Sleep(1000);
                 canonCamera.takePhoto();
 
-                canonData.CameraHandler.TakePhoto();
+                //canonData.CameraHandler.TakePhoto();
             }
             else if (captureMode == 2)
             {
@@ -112,7 +109,7 @@ namespace SlideShowImageCapture
             {
                 Thread.Sleep(1000);
                 androidCamera.takePhoto();
-                canonCamera.takePhoto();
+                //canonCamera.takePhoto();
 
             }
 

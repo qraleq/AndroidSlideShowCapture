@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SlideShowImageCapture", "SlideShowImageCapture\SlideShowImageCapture.csproj", "{C17AC8B0-3875-4F81-8CF3-51A303ACDD1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSDKLib", "..\..\..\Developement\EDSDK\EDSDKLib\EDSDKLib.csproj", "{AEB0A485-01FC-4111-818C-E81434A388F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EDSDKLib", "EDSDKLib\EDSDKLib.csproj", "{AEB0A485-01FC-4111-818C-E81434A388F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
