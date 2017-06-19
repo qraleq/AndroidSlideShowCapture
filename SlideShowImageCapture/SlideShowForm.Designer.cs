@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SlideShowImageCapture
@@ -129,6 +132,8 @@ namespace SlideShowImageCapture
             picBox.SizeMode = PictureBoxSizeMode.Zoom;
             picBox.Dock = DockStyle.Fill;
             Cursor.Hide();
+
+
         }
 
 

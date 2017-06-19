@@ -1,0 +1,15 @@
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\SlideShowImageCapture.exe.config
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.SlideShowForm.resources
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.Properties.Resources.resources
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.csproj.GenerateResource.Cache
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\SlideShowImageCapture.exe
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\SlideShowImageCapture.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\CameraSuite_NET.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\EDSDKLib.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\Mono.Posix.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\SharpAdbClient.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\x64\Release\EDSDKLib.xml
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.csprojResolveAssemblyReference.cache
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.exe
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\x64\Release\SlideShowImageCapture.pdb

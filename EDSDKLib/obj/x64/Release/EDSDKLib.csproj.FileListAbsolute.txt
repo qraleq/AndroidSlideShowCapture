@@ -1,0 +1,6 @@
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\x64\Release\EDSDKLib.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\x64\Release\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\x64\Release\EDSDKLib.xml
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Release\EDSDKLib.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Release\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Release\EDSDKLib.csprojResolveAssemblyReference.cache

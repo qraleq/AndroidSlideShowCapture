@@ -1,0 +1,4 @@
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\Debug\EDSDKLib.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\Debug\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\Debug\EDSDKLib.dll
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\Debug\EDSDKLib.pdb
