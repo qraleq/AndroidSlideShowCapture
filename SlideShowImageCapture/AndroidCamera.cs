@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace SlideShowImageCapture
 {
-    class AndroidCamera
+    public class AndroidCamera
     {
 
         public static class androidCameraData

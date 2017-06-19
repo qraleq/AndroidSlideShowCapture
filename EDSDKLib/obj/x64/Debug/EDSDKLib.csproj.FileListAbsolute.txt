@@ -2,3 +2,4 @@ Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\x64\Debug\EDSDKLib.d
 Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\bin\x64\Debug\EDSDKLib.pdb
 Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Debug\EDSDKLib.dll
 Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Debug\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\EDSDKLib\obj\x64\Debug\EDSDKLib.csprojResolveAssemblyReference.cache

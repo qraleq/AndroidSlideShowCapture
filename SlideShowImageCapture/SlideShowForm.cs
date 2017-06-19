@@ -14,7 +14,6 @@ namespace SlideShowImageCapture
 {
     public partial class SlideShowForm : Form
     {
-
         #region global
 
         // capture mode options
@@ -35,10 +34,6 @@ namespace SlideShowImageCapture
         AndroidCamera androidCamera = new AndroidCamera();
         CanonCamera canonCamera = new CanonCamera();
         SmartekCamera smartekCamera = new SmartekCamera();
-
-
-        ThreadStart cameraTS = new ThreadStart(CaptureImage);
-        
 
         #endregion
 
@@ -96,16 +91,41 @@ namespace SlideShowImageCapture
 
         private void OnSlideshowStart(object sender, EventArgs e)
         {
-            Thread cameraThread = new Thread(cameraTS);
-
-
             textBox1.Visible = false;
+
             // textbox containing current filename
             textBox2.Visible = false;
+            textBox2.Text = Path.GetFileName(images.First());
+
+            Image image = Image.FromFile(images.First());
+            picBox.Image = image;
 
 
-            ChangeSlide();
-            CaptureImage();
+
+
+            if (captureMode == 1)
+            {
+                Thread.Sleep(1000);
+                canonCamera.takePhoto();
+            }
+
+            else if (captureMode == 2)
+            {
+                androidCamera.takePhoto();
+            }
+
+            else if (captureMode == 3)
+            {
+                Thread.Sleep(1000);
+                androidCamera.takePhoto();
+                //canonCamera.takePhoto();
+            }
+
+            else if (captureMode == 4)
+            {
+                Thread.Sleep(1000);
+                smartekCamera.takePhoto();
+            }
 
             timer1.Interval = timerPeriod;
             timer1.Tick += new EventHandler(OnSlideShowTimer);
@@ -113,18 +133,45 @@ namespace SlideShowImageCapture
         }
 
 
+
         private void OnSlideShowTimer(object sender, EventArgs e)
         {
             if (i < images.Length)
             {
+                Task showSlide = Task.Run(() =>
+                {
+                    picBox.Image = Image.FromFile(images[i]);
+                });
+
+                showSlide.Wait();
 
                 textBox2.Text = Path.GetFileName(images[i]);
-                picBox.Image = Image.FromFile(images[i]);
 
 
-                CaptureImage(canonCamera, androidCamera, smartekCamera, captureMode);
 
-                
+                if (captureMode == 1)
+                {
+                    Thread.Sleep(1000);
+                    canonCamera.takePhoto();
+                }
+                else if (captureMode == 2)
+                {
+                    androidCamera.takePhoto();
+                }
+                else if (captureMode == 3)
+                {
+                    Thread.Sleep(1000);
+                    androidCamera.takePhoto();
+                    canonCamera.takePhoto();
+                }
+                else if (captureMode == 4)
+                {
+                    //Thread.Sleep(1000);
+                    smartekCamera.takePhoto();
+                }
+
+                //Thread.Sleep(600);
+
                 i++;
             }
             else
@@ -159,43 +206,6 @@ namespace SlideShowImageCapture
                 Thread.Sleep(1000);
                 System.Windows.Forms.Application.Exit();
             }
-        }
-
-
-        public static void ChangeSlide()
-        {
-            textBox2.Text = Path.GetFileName(images.First());
-            picBox.Image = Image.FromFile(images.First()); ;
-        }
-
-
-        public static void CaptureImage(CanonCamera canonCamera, AndroidCamera androidCamera, SmartekCamera smartekCamera, int captureMode)
-        {
-
-            if (captureMode == 1)
-            {
-                Thread.Sleep(1000);
-                canonCamera.takePhoto();
-            }
-
-            else if (captureMode == 2)
-            {
-                androidCamera.takePhoto();
-            }
-
-            else if (captureMode == 3)
-            {
-                Thread.Sleep(1000);
-                androidCamera.takePhoto();
-                //canonCamera.takePhoto();
-            }
-
-            else if (captureMode == 4)
-            {
-                Thread.Sleep(1000);
-                smartekCamera.takePhoto();
-            }
-
         }
 
 

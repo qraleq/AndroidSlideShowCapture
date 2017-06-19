@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace SlideShowImageCapture
 {
-    class CanonCamera
+    public class CanonCamera
     {
 
         public static class canonData

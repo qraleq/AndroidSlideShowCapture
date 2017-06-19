@@ -13,7 +13,7 @@ namespace SlideShowImageCapture
 
 
 
-    class SmartekCamera
+    public class SmartekCamera
     {
         public static class smartekData
         {
