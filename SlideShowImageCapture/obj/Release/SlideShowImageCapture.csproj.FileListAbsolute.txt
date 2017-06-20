@@ -26,3 +26,5 @@ Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\SharpAdbClient.dll
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\Release\SlideShowImageCapture.exe
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\Release\SlideShowImageCapture.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\EDSDKLib.pdb
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\EDSDKLib.xml

@@ -8,18 +8,17 @@ using System.Drawing.Imaging;
 using static SlideShowImageCapture.ImageUtils;
 using System.Windows.Forms;
 
+
 namespace SlideShowImageCapture
 {
-
-
 
     public class SmartekCamera
     {
         public static class smartekData
         {
             public static smcs.ICameraAPI smcsApi;
-            public static smcs.IDevice device;
-
+            public static smcs.IDevice device = null;
+            public static int numImages = 10;
         }
 
 
@@ -82,12 +81,15 @@ namespace SlideShowImageCapture
 
                     // disable trigger mode
                     bool status = smartekData.device.SetStringNodeValue("TriggerMode", "Off");
+                    ////status = smartekData.device.SetStringNodeValue("TriggerSource", "Software");
+
                     // set continuous acquisition mode
-                    status = smartekData.device.SetStringNodeValue("AcquisitionMode", "Continuous");
+                    status = smartekData.device.SetStringNodeValue("AcquisitionMode", "Single");
                     // start acquisition
                     status = smartekData.device.SetIntegerNodeValue("TLParamsLocked", 1);
-                    status = smartekData.device.CommandNodeExecute("AcquisitionStart");
 
+                    //status = smartekData.device.SetStringNodeValue("TriggerSelector", "FrameStart");
+                    status = smartekData.device.SetImageBufferFrameCount(1);
                 }
             }
         }
@@ -95,6 +97,7 @@ namespace SlideShowImageCapture
 
         public void initializeSmartekAPI()
         {
+            
             CallbackHandler eventHandler = new CallbackHandler();
 
             smcs.CameraSuite.InitCameraAPI();
@@ -105,26 +108,33 @@ namespace SlideShowImageCapture
                 Console.Out.WriteLine("Warning: Smartek Filter Driver not loaded");
             }
 
-            smartekData.smcsApi.SetHeartbeatTime(3);
+            smartekData.smcsApi.SetHeartbeatTime(1);
             smartekData.smcsApi.RegisterCallback(eventHandler);
+        }
 
+        public void closeSession()
+        {
+            smartekData.device.CommandNodeExecute("AcquisitionStop");
+            smartekData.device.SetIntegerNodeValue("TLParamsLocked", 0);
+            smartekData.device.Disconnect();
 
+            smcs.CameraSuite.ExitCameraAPI();
 
         }
 
 
+
         public void takePhoto()
         {
-
+            smartekData.device.CommandNodeExecute("AcquisitionStart");
+            
             smcs.IImageInfo imageInfo = null;
-            //Console.Out.WriteLine("Acquisition Start, press any key to exit loop...");
 
+            //Console.Out.WriteLine("Acquisition Start, press any key to exit loop...");
             smartekData.device.GetImageInfo(ref imageInfo);
 
             if (!smartekData.device.IsBufferEmpty())
             {
-
-
                 if (imageInfo != null)
                 {
                     uint sizeX, sizeY;
@@ -153,6 +163,7 @@ namespace SlideShowImageCapture
 
                 // remove (pop) image from image buffer
                 smartekData.device.PopImage(imageInfo);
+
                 // empty buffer
                 smartekData.device.ClearImageBuffer();
 

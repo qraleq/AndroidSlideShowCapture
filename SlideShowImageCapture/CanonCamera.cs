@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -11,6 +12,9 @@ namespace SlideShowImageCapture
 {
     public class CanonCamera
     {
+
+        static bool WaitForEvent;
+
 
         public static class canonData
         {
@@ -29,7 +33,6 @@ namespace SlideShowImageCapture
             if (!canonData.CameraHandler.CameraSessionOpen)
             {
                 canonData.CameraHandler.OpenSession(canonData.cameraList.FirstOrDefault());
-                canonData.CameraHandler.UILock(true);
             }
 
         }
@@ -40,12 +43,15 @@ namespace SlideShowImageCapture
             canonData.CameraHandler.SetSetting(EDSDK.PropID_SaveTo, (uint)EDSDK.EdsSaveTo.Host);
             canonData.CameraHandler.ImageSaveDirectory = @"D:\Measurements\";
 
-            //canonData.CameraHandler.ImageSaveDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
             canonData.CameraHandler.SetCapacity();
 
-
-            canonData.CameraHandler.TakePhoto();
+            try
+            {
+                canonData.CameraHandler.TakePhoto();
+            }
+            catch (Exception ex) { MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
+
 
 
         private void initializeCanonSDK()
@@ -65,5 +71,13 @@ namespace SlideShowImageCapture
         {
             canonData.cameraList = canonData.CameraHandler.GetCameraList();
         }
+
+        public void closeSession()
+        {
+            canonData.CameraHandler.UILock(false);
+            canonData.CameraHandler.CloseSession();
+            canonData.CameraHandler.Dispose();
+        }
+
     }
 }

@@ -8,7 +8,8 @@ using System.Threading;
 using SharpAdbClient;
 using static SlideShowImageCapture.CanonCamera;
 using static SlideShowImageCapture.AndroidCamera;
-
+using static SlideShowImageCapture.SmartekCamera;
+using EDSDKLib;
 
 namespace SlideShowImageCapture
 {
@@ -25,11 +26,11 @@ namespace SlideShowImageCapture
 
         // global variables for controlling input and time period for image slide show
         //string[] images = Directory.GetFiles(@"D:\Playing Cards\", "*.png");
-        string[] images = Directory.GetFiles(@"Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Debug\Playing Cards\", "*.png");
-        
+        string[] images = Directory.GetFiles(@"Y:\Projects\C# Projects\SlideShowCameraCapture\Test Images\", "*.png");
 
-        int i = 1;
-        int timerPeriod = 500;
+
+        int i = 0;
+        //int timerPeriod = 300;
 
         AndroidCamera androidCamera = new AndroidCamera();
         CanonCamera canonCamera = new CanonCamera();
@@ -39,8 +40,6 @@ namespace SlideShowImageCapture
 
         public SlideShowForm()
         {
-            AppDomain.CurrentDomain.ProcessExit += new EventHandler(OnProcessExit);
-
             try
             {
                 images = images.OrderBy(x => x).ToArray();
@@ -89,138 +88,75 @@ namespace SlideShowImageCapture
         }
 
 
-        private void OnSlideshowStart(object sender, EventArgs e)
+        public void OnSlideShowChange(object sender, EventArgs e)
         {
+
             textBox1.Visible = false;
-
-            // textbox containing current filename
             textBox2.Visible = false;
-            textBox2.Text = Path.GetFileName(images.First());
 
-            Image image = Image.FromFile(images.First());
-            picBox.Image = image;
-
-
-
-
-            if (captureMode == 1)
-            {
-                Thread.Sleep(1000);
-                canonCamera.takePhoto();
-            }
-
-            else if (captureMode == 2)
-            {
-                androidCamera.takePhoto();
-            }
-
-            else if (captureMode == 3)
-            {
-                Thread.Sleep(1000);
-                androidCamera.takePhoto();
-                //canonCamera.takePhoto();
-            }
-
-            else if (captureMode == 4)
-            {
-                Thread.Sleep(1000);
-                smartekCamera.takePhoto();
-            }
-
-            timer1.Interval = timerPeriod;
-            timer1.Tick += new EventHandler(OnSlideShowTimer);
-            timer1.Start();
-        }
-
-
-
-        private void OnSlideShowTimer(object sender, EventArgs e)
-        {
             if (i < images.Length)
             {
-                Task showSlide = Task.Run(() =>
-                {
-                    picBox.Image = Image.FromFile(images[i]);
-                });
-
-                showSlide.Wait();
-
                 textBox2.Text = Path.GetFileName(images[i]);
+                picBox.Image = Image.FromFile(images[i]);
+                picBox.Refresh();
 
 
+                switch (captureMode)
+                {
+                    case 1:
+                        canonCamera.takePhoto();
+                        Thread.Sleep(500);
 
-                if (captureMode == 1)
-                {
-                    Thread.Sleep(1000);
-                    canonCamera.takePhoto();
+                        if (i == 0)
+                        {
+                            timer1.Interval = 4000;
+                            timer1.Tick += new EventHandler(OnSlideShowChange);
+                            timer1.Start();
+                        }
+                        break;
+                    case 2:
+                        androidCamera.takePhoto();
+                        break;
+                    case 3:
+                        Thread.Sleep(1000);
+                        androidCamera.takePhoto();
+                        canonCamera.takePhoto();
+                        break;
+                    case 4:
+                        Thread.Sleep(300);
+                        smartekCamera.takePhoto();
+                        break;
                 }
-                else if (captureMode == 2)
-                {
-                    androidCamera.takePhoto();
-                }
-                else if (captureMode == 3)
-                {
-                    Thread.Sleep(1000);
-                    androidCamera.takePhoto();
-                    canonCamera.takePhoto();
-                }
-                else if (captureMode == 4)
-                {
-                    //Thread.Sleep(1000);
-                    smartekCamera.takePhoto();
-                }
-
-                //Thread.Sleep(600);
 
                 i++;
+
+                OnSlideShowChange(button1, EventArgs.Empty);
+
             }
             else
             {
                 Thread.Sleep(1000);
 
-                if (captureMode == 1)
+                switch (captureMode)
                 {
-                    canonData.CameraHandler.UILock(false);
-                    canonData.CameraHandler.CloseSession();
-                    canonData.CameraHandler.Dispose();
-                }
-                else
-                if (captureMode == 2)
-                {
-                    AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
-                }
-
-                if (captureMode == 3)
-                {
-                    canonData.CameraHandler.UILock(false);
-                    canonData.CameraHandler.CloseSession();
-                    canonData.CameraHandler.Dispose();
-                    AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
+                    case 1:
+                        canonCamera.closeSession();
+                        break;
+                    case 2:
+                        AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
+                        break;
+                    case 3:
+                        canonCamera.closeSession();
+                        AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
+                        break;
+                    case 4:
+                        smartekCamera.takePhoto();
+                        smartekCamera.closeSession();
+                        break;
                 }
 
-                if (captureMode == 4)
-                {
-                    smcs.CameraSuite.ExitCameraAPI();
-                }
-
-                Thread.Sleep(1000);
                 System.Windows.Forms.Application.Exit();
             }
-        }
-
-
-        static void OnProcessExit(object sender, EventArgs e)
-        {
-
-            //canonData.CameraHandler.UILock(false);
-            //canonData.CameraHandler.CloseSession();
-            //canonData.CameraHandler.Dispose();
-
-            //AdbClient.Instance.ExecuteRemoteCommand("am force-stop net.sourceforge.opencamera", androidCameraData.androidDeviceData, androidCameraData.receiver);
-            //AdbClient.Instance.ExecuteRemoteCommand("am force-stop com.oneplus.camera", androidCameraData.androidDeviceData, androidCameraData.receiver);
-
-            //smcs.CameraSuite.ExitCameraAPI();
-
         }
     }
 }
