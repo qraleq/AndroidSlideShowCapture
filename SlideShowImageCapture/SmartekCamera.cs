@@ -7,7 +7,8 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using static SlideShowImageCapture.ImageUtils;
 using System.Windows.Forms;
-
+using System.Threading;
+using System.IO;
 
 namespace SlideShowImageCapture
 {
@@ -18,7 +19,7 @@ namespace SlideShowImageCapture
         {
             public static smcs.ICameraAPI smcsApi;
             public static smcs.IDevice device = null;
-            public static int numImages = 10;
+            public static int numImages = 1;
         }
 
 
@@ -56,28 +57,32 @@ namespace SlideShowImageCapture
                     Int64 int64Value;
 
                     Console.Out.WriteLine("Connected to first camera: " + smartekData.device.GetIpAddress());
-                    if (smartekData.device.GetStringNodeValue("DeviceVendorName", out text))
-                    {
-                        Console.Out.WriteLine("Device Vendor: " + text);
-                    }
-                    if (smartekData.device.GetStringNodeValue("DeviceModelName", out text))
-                    {
-                        Console.Out.WriteLine("Device Model: " + text);
-                    }
-                    if (smartekData.device.GetIntegerNodeValue("Width", out int64Value))
-                    {
-                        Console.Out.WriteLine("Width: " + int64Value);
-                    }
-                    if (smartekData.device.GetIntegerNodeValue("Height", out int64Value))
-                    {
-                        Console.Out.WriteLine("Height: " + int64Value);
-                    }
+                    smartekData.device.GetStringNodeValue("DeviceVendorName", out text);
+                    Console.Out.WriteLine("Device Vendor: " + text);
+                    smartekData.device.GetStringNodeValue("DeviceModelName", out text);
+                    Console.Out.WriteLine("Device Model: " + text);
+                    smartekData.device.GetIntegerNodeValue("Width", out int64Value);
+                    Console.Out.WriteLine("Width: " + int64Value);
+                    smartekData.device.GetIntegerNodeValue("Height", out int64Value);
+                    Console.Out.WriteLine("Height: " + int64Value);
+                    smartekData.device.GetIntegerNodeValue("GevSCPSPacketSize", out int64Value);
+                    int64Value = int64Value & 0xFFFF;
+                    Console.Out.WriteLine("PacketSize: " + int64Value);
 
-                    Int64 packetSize = 0;
-                    smartekData.device.GetIntegerNodeValue("GevSCPSPacketSize", out packetSize);
-                    packetSize = packetSize & 0xFFFF;
-                    Console.Out.WriteLine("PacketSize: " + packetSize);
+                    smartekData.device.SetStringNodeValue("ExposureTime", "8333,34");
 
+                    smartekData.device.SetStringNodeValue("GainAutoBalance", "Off");
+                    smartekData.device.SetStringNodeValue("Gain", "12");
+
+
+                    smartekData.device.GetStringNodeValue("ExposureTime", out text);
+                    Console.Out.WriteLine("Exposure Time: " + text);
+
+                    smartekData.device.GetStringNodeValue("GainAutoBalance", out text);
+                    Console.Out.WriteLine("GainAutoBalance: " + text);
+
+                    smartekData.device.GetStringNodeValue("Gain", out text);
+                    Console.Out.WriteLine("Gain: " + text);
 
                     // disable trigger mode
                     bool status = smartekData.device.SetStringNodeValue("TriggerMode", "Off");
@@ -97,7 +102,7 @@ namespace SlideShowImageCapture
 
         public void initializeSmartekAPI()
         {
-            
+
             CallbackHandler eventHandler = new CallbackHandler();
 
             smcs.CameraSuite.InitCameraAPI();
@@ -126,8 +131,9 @@ namespace SlideShowImageCapture
 
         public void takePhoto()
         {
+
             smartekData.device.CommandNodeExecute("AcquisitionStart");
-            
+
             smcs.IImageInfo imageInfo = null;
 
             //Console.Out.WriteLine("Acquisition Start, press any key to exit loop...");
@@ -143,13 +149,16 @@ namespace SlideShowImageCapture
 
                     uint m_pixelType = 0;
 
-                    PixelFormat m_pixelFormat = PixelFormat.Format8bppIndexed;
+                    PixelFormat m_pixelFormat = PixelFormat.Format16bppGrayScale;
+                    //PixelFormat m_pixelFormat = PixelFormat.Format24bppRgb;
 
                     Bitmap bitmap = new Bitmap((int)sizeX, (int)sizeY, m_pixelFormat);
 
                     Rectangle m_rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-
-                    smcs.CameraSuite.GvspGetBitsPerPixel((smcs.GVSP_PIXEL_TYPES)m_pixelType);
+                    
+                    smcs.CameraSuite.GvspGetBitsPerPixel((smcs.GVSP_PIXEL_TYPES)17825797);
+                    
+                    //smcs.CameraSuite.GvspGetBitsPerPixel((smcs.GVSP_PIXEL_TYPES)17825838);
 
                     BitmapData bd = null;
 
@@ -157,17 +166,17 @@ namespace SlideShowImageCapture
 
                     string timeNow = DateTime.Now.ToString("yyyyMMdd_HHmmssfff");
 
-                    bitmap.Save("C:/Users/Ivan/Desktop/testimg/" + timeNow + ".png");
+                    bitmap.Save("C:/Users/Ivan/Desktop/testimg/" + timeNow + ".tiff", ImageFormat.Tiff);
 
+
+                    bitmap.Dispose();
                 }
-
-                // remove (pop) image from image buffer
-                smartekData.device.PopImage(imageInfo);
-
-                // empty buffer
-                smartekData.device.ClearImageBuffer();
-
             }
+            // remove (pop) image from image buffer
+            smartekData.device.PopImage(imageInfo);
+
+            // empty buffer
+            smartekData.device.ClearImageBuffer();
         }
 
 

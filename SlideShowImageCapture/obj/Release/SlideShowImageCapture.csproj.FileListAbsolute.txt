@@ -28,3 +28,4 @@ Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\Release
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\obj\Release\SlideShowImageCapture.pdb
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\EDSDKLib.pdb
 Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\EDSDKLib.xml
+Y:\Projects\C# Projects\SlideShowCameraCapture\SlideShowImageCapture\bin\Release\CameraSuite_NET.dll

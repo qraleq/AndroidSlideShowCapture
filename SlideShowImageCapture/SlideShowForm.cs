@@ -25,8 +25,15 @@ namespace SlideShowImageCapture
         int captureMode = 4;
 
         // global variables for controlling input and time period for image slide show
-        //string[] images = Directory.GetFiles(@"D:\Playing Cards\", "*.png");
-        string[] images = Directory.GetFiles(@"Y:\Projects\C# Projects\SlideShowCameraCapture\Test Images\", "*.png");
+        //string[] images = Directory.GetFiles(@"Y:\Misc\Playing Cards - PNG\", "*.png");
+
+
+
+        //string[] images = Directory.GetFiles(@"Y:\Projects\C# Projects\SlideShowCameraCapture\Test Images\", "*.png");
+        string[] images = Directory.GetFiles(@"Y:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Complete Measurement Process\Gray\", "*.png");
+        //string[] images = Directory.GetFiles(@"Y:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Measurement Masks With Frame\Hadamard\Upscaled\Measurement Masks\", "*.png");
+        //string[] images = Directory.GetFiles(@"Y:\Projects\MATLAB Projects\Structured Light Compressive Sensing\data\1920x1080 Patterns\Measurement Masks With Frame\Hadamard\Upscaled\Misc\", "*.png");
+
 
 
         int i = 0;
@@ -94,12 +101,16 @@ namespace SlideShowImageCapture
             textBox1.Visible = false;
             textBox2.Visible = false;
 
+            //Thread.Sleep(150);
+
             if (i < images.Length)
             {
-                textBox2.Text = Path.GetFileName(images[i]);
+                //textBox2.Text = Path.GetFileName(images[i]);
+
                 picBox.Image = Image.FromFile(images[i]);
                 picBox.Refresh();
 
+                Thread.Sleep(300);
 
                 switch (captureMode)
                 {
@@ -114,22 +125,36 @@ namespace SlideShowImageCapture
                             timer1.Start();
                         }
                         break;
+
                     case 2:
                         androidCamera.takePhoto();
                         break;
+
                     case 3:
                         Thread.Sleep(1000);
                         androidCamera.takePhoto();
                         canonCamera.takePhoto();
                         break;
+
                     case 4:
-                        Thread.Sleep(300);
-                        smartekCamera.takePhoto();
+
+
+                        ThreadStart threadS = new ThreadStart(smartekCamera.takePhoto);
+                        Thread thread = new Thread(threadS);
+
+                        thread.Start();
+                        thread.Join();
+
+                        //thread.Abort();
+                        //smartekCamera.takePhoto();
+
                         break;
                 }
 
                 i++;
 
+                //picBox.Dispose();
+                picBox.Image.Dispose();
                 OnSlideShowChange(button1, EventArgs.Empty);
 
             }
